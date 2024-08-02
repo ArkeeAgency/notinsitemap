@@ -39,6 +39,7 @@ const AnalyzePage: NextPage<AnalyzePageProps> = ({
 }: AnalyzePageProps) => {
   const { theme } = useTheme();
   const [uuid, setUuid] = React.useState<string | null>();
+  const [show, setShow] = React.useState(false);
 
   const { data, error, isLoading } = useSWRImmutable<AnalyzeResponseData>(
     uuid ? pathcat("/api/analyze/:domain", { domain, uuid }) : null,
@@ -49,7 +50,7 @@ const AnalyzePage: NextPage<AnalyzePageProps> = ({
     pathcat("/api/analyze/:domain/status", { domain, uuid }),
     fetcher,
     {
-      refreshInterval: data ? 2000 : 250,
+      refreshInterval: data && show ? 2000 : 250,
     },
   );
 
@@ -57,9 +58,17 @@ const AnalyzePage: NextPage<AnalyzePageProps> = ({
     if (statusData?.status !== uuid) {
       setUuid(statusData?.uuid);
     }
+
+    if (statusData?.status === "completed") {
+      setTimeout(() => {
+        setShow(true);
+      }, 500);
+    } else {
+      setShow(false);
+    }
   }, [statusData, uuid]);
 
-  if (isLoading || !data || statusData?.status !== "completed") {
+  if (isLoading || !data || statusData?.status !== "completed" || !show) {
     return (
       <Container h={"100vh"} align={"center"} justify={"center"}>
         <Head>
