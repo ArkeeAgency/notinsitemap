@@ -3,12 +3,21 @@ import Head from "next/head";
 import { useRouter } from "next/router";
 import Balancer from "react-wrap-balancer";
 
+import Footer from "../components/footer";
+import { extractDomainFromUrl } from "../utils/domain";
+
 const IndexPage = () => {
   const router = useRouter();
 
   const handleSubmission = (e) => {
     e.preventDefault();
-    router.push(`/analyze/${e.target.domain.value}`);
+    let value = e.target.domain.value;
+    if (!value) return;
+    if (value.startsWith("http://") || value.startsWith("https://")) {
+      value = extractDomainFromUrl(value);
+    }
+
+    router.push(`/analyze/${value}`);
   };
 
   return (
@@ -16,9 +25,8 @@ const IndexPage = () => {
       maxW={"laptop"}
       mx={"auto"}
       p={"normal"}
-      h={"100vh"}
-      justify={"center"}
-      align={"center"}
+      minH={"100vh"}
+      justify={"space-between"}
     >
       <Head>
         <title>{"notinsitemap."}</title>
@@ -29,7 +37,15 @@ const IndexPage = () => {
           }
         />
       </Head>
-      <Container maxW={"mobile"} mx={"auto"} py={"extraLarge"} section>
+      <Container
+        maxW={"mobile"}
+        mx={"auto"}
+        py={"extraLarge"}
+        flex={1}
+        align={"center"}
+        justify={"center"}
+        section
+      >
         <Container mt={"normal"} align={"center"}>
           <Text align={"center"} size={"title"} weight={"bold"} h1>
             {"notinsitemap."}
@@ -61,6 +77,7 @@ const IndexPage = () => {
           <Button htmlType={"submit"}>{"Analyze"}</Button>
         </Container>
       </Container>
+      <Footer />
     </Container>
   );
 };

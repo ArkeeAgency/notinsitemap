@@ -5,6 +5,7 @@ import {
   Icon,
   Link,
   Progress,
+  Text,
   UnorderedList,
   useTheme,
 } from "kitchn";
@@ -16,6 +17,7 @@ import { RiArrowLeftLine, RiUploadLine } from "react-icons/ri";
 import useSWR from "swr";
 import useSWRImmutable from "swr/immutable";
 
+import Footer from "../../components/footer";
 import { fetcher } from "../../services/swr";
 import { Status } from "../../utils/status-manager";
 import { AnalyzeResponseData } from "../api/analyze/[domain]";
@@ -63,7 +65,10 @@ const AnalyzePage: NextPage<AnalyzePageProps> = ({
         <Head>
           <title>{`Analyzing ${domain}...`}</title>
         </Head>
-        <Container w={"100%"} maxW={500}>
+        <Container w={"100%"} maxW={500} gap={"normal"} align={"center"}>
+          <Text size={"large"} weight={"bold"} h1>
+            {`Analyzing ${domain}...`}
+          </Text>
           <Progress
             value={StatusValueMap[statusData?.status || "pending"]}
             colors={{
@@ -86,6 +91,16 @@ const AnalyzePage: NextPage<AnalyzePageProps> = ({
             checkpointTitle={false}
             checkpointStyle={"bar"}
           />
+          <Container align={"center"}>
+            <Link href={"/"}>
+              <Button
+                prefix={<Icon icon={RiArrowLeftLine} color={"inherit"} />}
+                type={"dark"}
+              >
+                {"Cancel"}
+              </Button>
+            </Link>
+          </Container>
         </Container>
       </Container>
     );
@@ -104,116 +119,126 @@ const AnalyzePage: NextPage<AnalyzePageProps> = ({
 
   return (
     <Container
+      maxW={"laptop"}
       mx={"auto"}
-      maxW={"mobile"}
-      py={"large"}
-      px={"normal"}
-      gap={"small"}
+      p={"normal"}
+      minH={"100vh"}
+      justify={"space-between"}
     >
       {" "}
       <Head>
         <title>{`${domain} Analysis`}</title>
       </Head>
-      <Container justify={"space-between"} row>
-        <Link href={"/"} type={"dark"}>
+      <Container
+        maxW={"mobile"}
+        mx={"auto"}
+        py={"extraLarge"}
+        flex={1}
+        justify={"center"}
+        section
+      >
+        <Container justify={"space-between"} row>
+          <Link href={"/"} type={"dark"}>
+            <Button
+              type={"dark"}
+              prefix={<Icon icon={RiArrowLeftLine} color={"inherit"} />}
+            >
+              {"Back"}
+            </Button>
+          </Link>
+
           <Button
             type={"dark"}
-            prefix={<Icon icon={RiArrowLeftLine} color={"inherit"} />}
+            suffix={<Icon icon={RiUploadLine} color={"inherit"} />}
+            disabled
           >
-            {"Back"}
+            {"Export"}
           </Button>
-        </Link>
+        </Container>
+        <Fieldset.Container>
+          <Fieldset.Content>
+            <Fieldset.Title>{"Sitemaps"}</Fieldset.Title>
 
-        <Button
-          type={"dark"}
-          suffix={<Icon icon={RiUploadLine} color={"inherit"} />}
-          disabled
-        >
-          {"Export"}
-        </Button>
-      </Container>
-      <Fieldset.Container>
-        <Fieldset.Content>
-          <Fieldset.Title>{"Sitemaps"}</Fieldset.Title>
+            <Fieldset.Subtitle>
+              {data.sitemaps && (
+                <>
+                  {"Found "}
+                  {data.sitemaps.length}
+                  {" sitemaps."}
+                  <UnorderedList>
+                    {data.sitemaps.map((sitemap, index) => (
+                      <li key={index}>{sitemap}</li>
+                    ))}
+                  </UnorderedList>
+                </>
+              )}
+            </Fieldset.Subtitle>
+          </Fieldset.Content>
+        </Fieldset.Container>
+        <Fieldset.Container>
+          <Fieldset.Content>
+            <Fieldset.Title>{"Sitemap URLs"}</Fieldset.Title>
 
-          <Fieldset.Subtitle>
-            {data.sitemaps && (
-              <>
-                {"Found "}
-                {data.sitemaps.length}
-                {" sitemaps."}
-                <UnorderedList>
-                  {data.sitemaps.map((sitemap, index) => (
-                    <li key={index}>{sitemap}</li>
-                  ))}
-                </UnorderedList>
-              </>
-            )}
-          </Fieldset.Subtitle>
-        </Fieldset.Content>
-      </Fieldset.Container>
-      <Fieldset.Container>
-        <Fieldset.Content>
-          <Fieldset.Title>{"Sitemap URLs"}</Fieldset.Title>
-
-          <Fieldset.Subtitle>
-            {data.sitemapsUrls && (
-              <>
-                {"Found "}
-                {data.sitemapsUrls.length}
-                {" URLs in sitemaps."}
-                {/* <UnorderedList>
+            <Fieldset.Subtitle>
+              {data.sitemapsUrls && (
+                <>
+                  {"Found "}
+                  {data.sitemapsUrls.length}
+                  {" URLs in sitemaps."}
+                  {/* <UnorderedList>
                   {data.sitemapsUrls.map((url, index) => (
                     <li key={index}>{url}</li>
                   ))}
                 </UnorderedList> */}
-              </>
-            )}
-          </Fieldset.Subtitle>
-        </Fieldset.Content>
-      </Fieldset.Container>
-      <Fieldset.Container>
-        <Fieldset.Content>
-          <Fieldset.Title>{"Crawled URLs"}</Fieldset.Title>
+                </>
+              )}
+            </Fieldset.Subtitle>
+          </Fieldset.Content>
+        </Fieldset.Container>
+        <Fieldset.Container>
+          <Fieldset.Content>
+            <Fieldset.Title>{"Crawled URLs"}</Fieldset.Title>
 
-          <Fieldset.Subtitle>
-            {data.crawledUrls && (
-              <>
-                {"Crawled "}
-                {data.crawledUrls.length}
-                {" URLs."}
-                {/* <UnorderedList>
+            <Fieldset.Subtitle>
+              {data.crawledUrls && (
+                <>
+                  {"Crawled "}
+                  {data.crawledUrls.length}
+                  {" URLs."}
+                  {/* <UnorderedList>
                   {data.crawledUrls.map((url, index) => (
                     <li key={index}>{url}</li>
                   ))}
                 </UnorderedList> */}
-              </>
-            )}
-          </Fieldset.Subtitle>
-        </Fieldset.Content>
-      </Fieldset.Container>
-      <Fieldset.Container>
-        <Fieldset.Content>
-          <Fieldset.Title>{"Not in Sitemaps URLs"}</Fieldset.Title>
+                </>
+              )}
+            </Fieldset.Subtitle>
+          </Fieldset.Content>
+        </Fieldset.Container>
+        <Fieldset.Container>
+          <Fieldset.Content>
+            <Fieldset.Title>{"Not in Sitemaps URLs"}</Fieldset.Title>
 
-          <Fieldset.Subtitle>
-            {data.notInSitemapsUrls && (
-              <>
-                {"Found "}
-                {data.notInSitemapsUrls.length}
-                {" URLs not in sitemaps."}
-                <UnorderedList>
-                  {data.notInSitemapsUrls.map((url, index) => (
-                    <li key={index}>
-                      <Link href={url}>{url}</Link>
-                    </li>
-                  ))}
-                </UnorderedList>
-              </>
-            )}
-          </Fieldset.Subtitle>
-        </Fieldset.Content>
-      </Fieldset.Container>
+            <Fieldset.Subtitle>
+              {data.notInSitemapsUrls && (
+                <>
+                  {"Found "}
+                  {data.notInSitemapsUrls.length}
+                  {" URLs not in sitemaps."}
+                  <UnorderedList>
+                    {data.notInSitemapsUrls.map((url, index) => (
+                      <li key={index}>
+                        <Link href={url}>{url}</Link>
+                      </li>
+                    ))}
+                  </UnorderedList>
+                </>
+              )}
+            </Fieldset.Subtitle>
+          </Fieldset.Content>
+        </Fieldset.Container>
+      </Container>
+      <Footer />
     </Container>
   );
 };
