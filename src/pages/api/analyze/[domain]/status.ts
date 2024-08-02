@@ -2,20 +2,13 @@ import type { NextApiRequest, NextApiResponse } from "next";
 
 import { getStatus, Status } from "../../../../utils/status-manager";
 
-type StatusResponse =
-  | {
-      domain: string;
-      totalUrls: number;
-      crawledUrls: number;
-      status: Status["status"];
-    }
-  | { message: string };
+type StatusResponse = Status | { message: string };
 
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<StatusResponse>,
 ) {
-  const { domain } = req.query;
+  const { domain, uuid } = req.query;
 
   if (!domain) {
     res.status(400).json({ message: "Please provide a domain." });
@@ -27,7 +20,12 @@ export default async function handler(
     return;
   }
 
-  const status = getStatus(domain);
+  if (Array.isArray(uuid)) {
+    res.status(400).json({ message: "Please provide a single uuid." });
+    return;
+  }
+
+  const status = getStatus(domain, uuid);
 
   if (status) {
     res.status(200).json(status);

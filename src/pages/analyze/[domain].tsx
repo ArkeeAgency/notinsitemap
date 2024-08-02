@@ -9,6 +9,9 @@ import {
   useTheme,
 } from "kitchn";
 import { NextPage } from "next";
+import Head from "next/head";
+import { pathcat } from "pathcat";
+import React from "react";
 import { RiArrowLeftLine, RiUploadLine } from "react-icons/ri";
 import useSWR from "swr";
 import useSWRImmutable from "swr/immutable";
@@ -33,29 +36,33 @@ const AnalyzePage: NextPage<AnalyzePageProps> = ({
   domain,
 }: AnalyzePageProps) => {
   const { theme } = useTheme();
+  const [uuid, setUuid] = React.useState<string | null>();
+
   const { data, error, isLoading } = useSWRImmutable<AnalyzeResponseData>(
-    `/api/analyze/${domain}`,
+    uuid ? pathcat("/api/analyze/:domain", { domain, uuid }) : null,
     fetcher,
   );
 
   const { data: statusData } = useSWR(
-    `/api/analyze/${domain}/status`,
+    pathcat("/api/analyze/:domain/status", { domain, uuid }),
     fetcher,
     {
-      refreshInterval: 500,
+      refreshInterval: data ? 2000 : 250,
     },
   );
 
-  console.log("status", statusData);
+  React.useEffect(() => {
+    if (statusData?.status !== uuid) {
+      setUuid(statusData?.uuid);
+    }
+  }, [statusData, uuid]);
 
-  if (error) {
-    return <Container>{"Error loading data"}</Container>;
-  }
-
-  // if (true) {
   if (isLoading || !data || statusData?.status !== "completed") {
     return (
       <Container h={"100vh"} align={"center"} justify={"center"}>
+        <Head>
+          <title>{`Analyzing ${domain}...`}</title>
+        </Head>
         <Container w={"100%"} maxW={500}>
           <Progress
             value={StatusValueMap[statusData?.status || "pending"]}
@@ -84,6 +91,15 @@ const AnalyzePage: NextPage<AnalyzePageProps> = ({
     );
   }
 
+  // const { data, error, isLoading } = useSWRImmutable<AnalyzeResponseData>(
+  //   `/api/analyze/${domain}`,
+  //   fetcher,
+  // );
+
+  if (error) {
+    return <Container>{"Error loading data"}</Container>;
+  }
+
   console.log("data", data);
 
   return (
@@ -94,6 +110,10 @@ const AnalyzePage: NextPage<AnalyzePageProps> = ({
       px={"normal"}
       gap={"small"}
     >
+      {" "}
+      <Head>
+        <title>{`${domain} Analysis`}</title>
+      </Head>
       <Container justify={"space-between"} row>
         <Link href={"/"} type={"dark"}>
           <Button
@@ -112,7 +132,6 @@ const AnalyzePage: NextPage<AnalyzePageProps> = ({
           {"Export"}
         </Button>
       </Container>
-
       <Fieldset.Container>
         <Fieldset.Content>
           <Fieldset.Title>{"Sitemaps"}</Fieldset.Title>
@@ -133,7 +152,6 @@ const AnalyzePage: NextPage<AnalyzePageProps> = ({
           </Fieldset.Subtitle>
         </Fieldset.Content>
       </Fieldset.Container>
-
       <Fieldset.Container>
         <Fieldset.Content>
           <Fieldset.Title>{"Sitemap URLs"}</Fieldset.Title>
@@ -154,7 +172,6 @@ const AnalyzePage: NextPage<AnalyzePageProps> = ({
           </Fieldset.Subtitle>
         </Fieldset.Content>
       </Fieldset.Container>
-
       <Fieldset.Container>
         <Fieldset.Content>
           <Fieldset.Title>{"Crawled URLs"}</Fieldset.Title>
@@ -175,7 +192,6 @@ const AnalyzePage: NextPage<AnalyzePageProps> = ({
           </Fieldset.Subtitle>
         </Fieldset.Content>
       </Fieldset.Container>
-
       <Fieldset.Container>
         <Fieldset.Content>
           <Fieldset.Title>{"Not in Sitemaps URLs"}</Fieldset.Title>

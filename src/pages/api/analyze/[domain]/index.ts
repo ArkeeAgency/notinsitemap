@@ -7,7 +7,8 @@ import {
   getSitemapsUrls,
 } from "../../../../utils/sitemaps";
 import {
-  initializeStatus,
+  getStatus,
+  resetStatus,
   updateStatus,
 } from "../../../../utils/status-manager";
 
@@ -24,7 +25,7 @@ export default async function handler(
   res: NextApiResponse<AnalyzeResponseData>,
 ) {
   // retrive domain query from request
-  const { domain } = req.query;
+  const { domain, uuid } = req.query;
 
   if (!domain) {
     res.status(400).json({ message: "Please provide a domain." });
@@ -36,17 +37,39 @@ export default async function handler(
     return;
   }
 
-  initializeStatus(domain);
+  if (!uuid) {
+    res.status(400).json({
+      message: "Please generate a uuid. `GET /api/analyze/[domain]/status`",
+    });
+    return;
+  }
+
+  if (Array.isArray(uuid)) {
+    res.status(400).json({ message: "Please provide a single uuid." });
+    return;
+  }
+
+  const handleClientDisconnect = () => {
+    if (getStatus(domain, uuid)?.status !== "completed") {
+      console.log(
+        `Client disconnected. Resetting status for ${domain}@${uuid}.`,
+      );
+
+      resetStatus(uuid);
+    }
+  };
+
+  res.on("close", handleClientDisconnect);
 
   const sitemaps = await getSitemaps(domain);
 
-  updateStatus(domain, "get-sitemaps");
+  updateStatus(uuid, "get-sitemaps");
 
   const sitemapsUrls = await getSitemapsUrls(sitemaps);
 
-  updateStatus(domain, "get-sitemaps-urls");
+  updateStatus(uuid, "get-sitemaps-urls");
 
-  const crawledUrls = await crawlUrls(domain, sitemapsUrls);
+  const crawledUrls = await crawlUrls(domain, uuid, sitemapsUrls);
 
   const notInSitemapsUrls = getNotInSitemapsUrls(sitemapsUrls, crawledUrls);
 

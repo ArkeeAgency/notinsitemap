@@ -1,10 +1,10 @@
-// /utils/crawler.ts
 import { CheerioCrawler, Configuration } from "crawlee";
 
 import { updateStatus } from "./status-manager";
 
 export async function crawlUrls(
   domain: string,
+  uuid: string,
   sitemapsUrls: string[],
 ): Promise<string[]> {
   const crawledUrls: string[] = [];
@@ -14,7 +14,7 @@ export async function crawlUrls(
       async requestHandler({ request, _$, enqueueLinks }) {
         crawledUrls.push(request.loadedUrl);
         updateStatus(
-          domain,
+          uuid,
           "crawling",
           crawledUrls.length,
           (await crawler.getRequestQueue()).getTotalCount(),
@@ -36,7 +36,12 @@ export async function crawlUrls(
   await crawler.addRequests(sitemapsUrls);
   await crawler.run();
 
-  updateStatus(domain, "completed", crawledUrls.length);
+  updateStatus(
+    uuid,
+    "completed",
+    crawledUrls.length,
+    (await crawler.getRequestQueue()).getTotalCount(),
+  );
 
   return crawledUrls;
 }
