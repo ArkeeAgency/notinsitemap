@@ -21,17 +21,12 @@ export type AnalyzePageProps = {
   domain: string;
 };
 
-const getValueForStatus = (status: Status["status"]) => {
-  switch (status) {
-    case "pending":
-      return 0;
-    case "in-progress":
-      return 1;
-    case "completed":
-      return 2;
-    default:
-      return 0;
-  }
+const StatusValueMap: { [key in Status["status"]]: number } = {
+  pending: 0,
+  "get-sitemaps": 1,
+  "get-sitemaps-urls": 2,
+  crawling: 3,
+  completed: 4,
 };
 
 const AnalyzePage: NextPage<AnalyzePageProps> = ({
@@ -47,7 +42,7 @@ const AnalyzePage: NextPage<AnalyzePageProps> = ({
     `/api/analyze/${domain}/status`,
     fetcher,
     {
-      refreshInterval: isLoading ? 500 : 0,
+      refreshInterval: 500,
     },
   );
 
@@ -57,25 +52,30 @@ const AnalyzePage: NextPage<AnalyzePageProps> = ({
     return <Container>{"Error loading data"}</Container>;
   }
 
+  // if (true) {
   if (isLoading || !data || statusData?.status !== "completed") {
     return (
       <Container h={"100vh"} align={"center"} justify={"center"}>
         <Container w={"100%"} maxW={500}>
           <Progress
-            value={getValueForStatus(statusData?.status || "pending")}
+            value={StatusValueMap[statusData?.status || "pending"]}
             colors={{
               0: theme.colors.accent.info,
-              1: theme.colors.accent.warning,
-              2: theme.colors.accent.success,
+              1: theme.colors.accent.info,
+              2: theme.colors.accent.info,
+              3: theme.colors.accent.warning,
+              4: theme.colors.accent.success,
             }}
             states={{
               0: "Pending",
-              1: `In Progress (${statusData?.crawledUrls || 0}/${
+              1: "Getting sitemaps",
+              2: "Getting sitemap URLs",
+              3: `Crawling (${statusData?.crawledUrls || 0}/${
                 statusData?.totalUrls || 0
               })`,
-              2: "Completed",
+              4: "Completed",
             }}
-            max={2}
+            max={4}
             checkpointTitle={false}
             checkpointStyle={"bar"}
           />

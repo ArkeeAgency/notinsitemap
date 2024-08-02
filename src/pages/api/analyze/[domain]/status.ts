@@ -1,13 +1,13 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 
-import { getStatus } from "../../../../utils/status-manager";
+import { getStatus, Status } from "../../../../utils/status-manager";
 
 type StatusResponse =
   | {
       domain: string;
       totalUrls: number;
       crawledUrls: number;
-      status: "pending" | "in-progress" | "completed";
+      status: Status["status"];
     }
   | { message: string };
 

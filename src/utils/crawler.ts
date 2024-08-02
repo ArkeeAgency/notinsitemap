@@ -13,7 +13,12 @@ export async function crawlUrls(
     {
       async requestHandler({ request, _$, enqueueLinks }) {
         crawledUrls.push(request.loadedUrl);
-        updateStatus(domain, "in-progress", crawledUrls.length);
+        updateStatus(
+          domain,
+          "crawling",
+          crawledUrls.length,
+          (await crawler.getRequestQueue()).getTotalCount(),
+        );
         console.log(
           `${crawledUrls.length}/${sitemapsUrls.length}: ${request.loadedUrl}`,
         );

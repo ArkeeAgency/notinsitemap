@@ -6,7 +6,10 @@ import {
   getSitemaps,
   getSitemapsUrls,
 } from "../../../../utils/sitemaps";
-import { initializeStatus } from "../../../../utils/status-manager";
+import {
+  initializeStatus,
+  updateStatus,
+} from "../../../../utils/status-manager";
 
 export type AnalyzeResponseData = {
   message: string;
@@ -37,7 +40,11 @@ export default async function handler(
 
   const sitemaps = await getSitemaps(domain);
 
+  updateStatus(domain, "get-sitemaps");
+
   const sitemapsUrls = await getSitemapsUrls(sitemaps);
+
+  updateStatus(domain, "get-sitemaps-urls");
 
   const crawledUrls = await crawlUrls(domain, sitemapsUrls);
 

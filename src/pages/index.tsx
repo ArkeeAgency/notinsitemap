@@ -17,7 +17,7 @@ const IndexPage = () => {
       mx={"auto"}
       p={"normal"}
       h={"100vh"}
-      justify={"space-between"}
+      justify={"center"}
       align={"center"}
     >
       <Head>
@@ -29,13 +29,7 @@ const IndexPage = () => {
           }
         />
       </Head>
-      <Container
-        id={"header"}
-        maxW={"mobile"}
-        mx={"auto"}
-        py={"extraLarge"}
-        header
-      >
+      <Container maxW={"mobile"} mx={"auto"} py={"extraLarge"} section>
         <Container mt={"normal"} align={"center"}>
           <Text align={"center"} size={"title"} weight={"bold"} h1>
             {"notinsitemap."}
