@@ -13,7 +13,7 @@ import { NextPage } from "next";
 import Head from "next/head";
 import { pathcat } from "pathcat";
 import React from "react";
-import { RiArrowLeftLine, RiUploadLine } from "react-icons/ri";
+import { RiArrowLeftLine, RiStarFill, RiUploadLine } from "react-icons/ri";
 import useSWR from "swr";
 import useSWRImmutable from "swr/immutable";
 
@@ -124,19 +124,13 @@ const AnalyzePage: NextPage<AnalyzePageProps> = ({
       p={"normal"}
       minH={"100vh"}
       justify={"space-between"}
+      align={"center"}
     >
       {" "}
       <Head>
         <title>{`${domain} Analysis`}</title>
       </Head>
-      <Container
-        maxW={"mobile"}
-        mx={"auto"}
-        py={"extraLarge"}
-        flex={1}
-        justify={"center"}
-        section
-      >
+      <Container w={"mobile"} flex={1} gap={"normal"} section>
         <Container justify={"space-between"} row>
           <Link href={"/"} type={"dark"}>
             <Button
@@ -147,13 +141,23 @@ const AnalyzePage: NextPage<AnalyzePageProps> = ({
             </Button>
           </Link>
 
-          <Button
-            type={"dark"}
-            suffix={<Icon icon={RiUploadLine} color={"inherit"} />}
-            disabled
-          >
-            {"Export"}
-          </Button>
+          <Container row gap={"small"}>
+            <Link href={"https://github.com/ArkeeAgency/notinsitemap"}>
+              <Button
+                type={"dark"}
+                suffix={<Icon icon={RiStarFill} color={"inherit"} />}
+              >
+                {"Give us a star"}
+              </Button>
+            </Link>
+            <Button
+              type={"dark"}
+              suffix={<Icon icon={RiUploadLine} color={"inherit"} />}
+              disabled
+            >
+              {"Export"}
+            </Button>
+          </Container>
         </Container>
         <Fieldset.Container>
           <Fieldset.Content>
