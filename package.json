@@ -9,8 +9,7 @@
   "dependencies": {
     "@fontsource/jost": "^5.0.18",
     "crawlee": "^3.11.1",
-    "kitch": "^1.3.0",
-    "kitchn": "latest",
+    "kitchn": "^0.7.1",
     "next": "^13.0.2",
     "pathcat": "^1.3.2",
     "react": "^18.2.0",
