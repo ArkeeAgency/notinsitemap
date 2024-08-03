@@ -10,11 +10,11 @@ const App = ({ Component, pageProps }: AppProps) => {
       themes={{
         light: createTheme({
           ...lightTheme,
-          family: { primary: "Jost", monospace: "monospace" },
+          family: { primary: "Jost" },
         }),
         dark: createTheme({
           ...darkTheme,
-          family: { primary: "Jost", monospace: "monospace" },
+          family: { primary: "Jost" },
         }),
       }}
     >
