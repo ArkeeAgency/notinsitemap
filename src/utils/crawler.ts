@@ -1,9 +1,9 @@
 import { CheerioCrawler, Configuration } from "crawlee";
 
+import { normalizeUrl } from "./sitemaps";
 import { updateStatus } from "./status-manager";
 
 export async function crawlUrls(
-  domain: string,
   uuid: string,
   sitemapsUrls: string[],
 ): Promise<string[]> {
@@ -13,7 +13,7 @@ export async function crawlUrls(
     {
       async requestHandler({ request, _$, enqueueLinks }) {
         const totalCount = (await crawler.getRequestQueue()).getTotalCount();
-        crawledUrls.push(request.loadedUrl);
+        crawledUrls.push(normalizeUrl(request.loadedUrl));
         updateStatus(uuid, "crawling", crawledUrls.length, totalCount);
         console.log(
           `${crawledUrls.length}/${totalCount}: ${request.loadedUrl}`,

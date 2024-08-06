@@ -69,7 +69,7 @@ export default async function handler(
 
   updateStatus(uuid, "get-sitemaps-urls");
 
-  const crawledUrls = await crawlUrls(domain, uuid, sitemapsUrls);
+  const crawledUrls = await crawlUrls(uuid, sitemapsUrls);
 
   const notInSitemapsUrls = getNotInSitemapsUrls(sitemapsUrls, crawledUrls);
 
