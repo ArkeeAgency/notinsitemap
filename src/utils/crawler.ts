@@ -12,15 +12,11 @@ export async function crawlUrls(
   const crawler = new CheerioCrawler(
     {
       async requestHandler({ request, _$, enqueueLinks }) {
+        const totalCount = (await crawler.getRequestQueue()).getTotalCount();
         crawledUrls.push(request.loadedUrl);
-        updateStatus(
-          uuid,
-          "crawling",
-          crawledUrls.length,
-          (await crawler.getRequestQueue()).getTotalCount(),
-        );
+        updateStatus(uuid, "crawling", crawledUrls.length, totalCount);
         console.log(
-          `${crawledUrls.length}/${sitemapsUrls.length}: ${request.loadedUrl}`,
+          `${crawledUrls.length}/${totalCount}: ${request.loadedUrl}`,
         );
         await enqueueLinks();
       },

@@ -38,7 +38,7 @@ export const getSitemaps = async (domain: string) => {
   sitemaps = Array.from(new Set(sitemaps));
 
   console.log(`Found ${sitemaps.length} sitemaps.`);
-  return sitemaps;
+  return sitemaps.map((sitemap) => sitemap.trim());
 };
 
 export const getSitemapsUrls = async (sitemaps: string[]) => {
@@ -47,12 +47,12 @@ export const getSitemapsUrls = async (sitemaps: string[]) => {
   const sitemap = await Sitemap.load(sitemaps);
 
   console.log(`Found ${sitemap.urls.length} URLs.`);
-  return sitemap.urls;
+  return sitemap.urls.map((url) => url.trim());
 };
 
 export function getNotInSitemapsUrls(
   sitemapsUrls: string[],
   crawledUrls: string[],
 ): string[] {
-  return sitemapsUrls.filter((url) => !crawledUrls.includes(url));
+  return crawledUrls.filter((url) => !sitemapsUrls.includes(url));
 }
