@@ -27,8 +27,8 @@ export async function crawlUrls(
       maxRequestsPerCrawl: 50000,
     },
     new Configuration({
-      persistStorage: false,
-      purgeOnStart: false,
+      persistStorage: true,
+      purgeOnStart: true,
     }),
   );
 
